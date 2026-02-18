@@ -25,17 +25,17 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: THEME_COLOR,
     icons: [
       {
-        src: '/i.c.l.jpg',
+        src: '/icons/i.c.l.jpg',
         sizes: ICON_SIZE_32,
         type: ICON_TYPE_ICO,
       },
       {
-        src: '/i.c.l.jpg',
+        src: '/icons/i.c.l.jpg',
         sizes: ICON_SIZE_192,
         type: ICON_TYPE_PNG,
       },
       {
-        src: '/i.c.l.jpg',
+        src: '/icons/i.c.l.jpg',
         sizes: ICON_SIZE_512,
         type: ICON_TYPE_PNG,
       },

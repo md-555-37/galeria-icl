@@ -17,7 +17,7 @@ export default function Logo({
       className={`inline-flex cursor-pointer items-center gap-3 transition-transform hover:scale-105 ${className}`}
     >
       <Image
-        src="/i.c.l.jpg"
+        src="/icons/i.c.l.jpg"
         alt="I.C.L Logo"
         width={size}
         height={size}

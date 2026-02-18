@@ -30,7 +30,9 @@ const OG_DESCRIPTION = 'Recursos gratuitos para seus perfis no GitHub';
 const TWITTER_CARD = 'summary_large_image';
 const TWITTER_TITLE = 'Galeria I.C.L';
 const TWITTER_DESCRIPTION = 'Recursos gratuitos para seus perfis no GitHub';
-const TWITTER_IMAGE = '/i.c.l.jpg';
+// icon file moved into /icons folder
+const ICON_IMAGE = '/icons/i.c.l.jpg';
+const TWITTER_IMAGE = ICON_IMAGE;
 const MAX_VIDEO_PREVIEW = -1;
 const MAX_IMAGE_PREVIEW = 'large';
 const MAX_SNIPPET = -1;
@@ -82,20 +84,20 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/i.c.l.jpg', type: ICON_TYPE_PNG },
-      { url: '/i.c.l.jpg', sizes: ICON_SIZES_32 },
+      { url: ICON_IMAGE, type: ICON_TYPE_PNG },
+      { url: ICON_IMAGE, sizes: ICON_SIZES_32 },
       {
-        url: '/i.c.l.jpg',
+        url: ICON_IMAGE,
         sizes: ICON_SIZES_192,
         type: ICON_TYPE_PNG,
       },
       {
-        url: '/i.c.l.jpg',
+        url: ICON_IMAGE,
         sizes: ICON_SIZES_512,
         type: ICON_TYPE_PNG,
       },
     ],
-    apple: '/i.c.l.jpg',
+    apple: ICON_IMAGE,
   },
   manifest: MANIFEST_PATH,
 };
