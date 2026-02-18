@@ -200,7 +200,7 @@ Contribuições são bem-vindas! Siga o guia em [CONTRIBUTING.md](./CONTRIBUTING
 
 ### Outros Problemas
 
-Consulte a [documentação de debugging](./docs) ou [abra uma issue](https://github.com/ascentus/galeria/issues).
+Consulte a [documentação de debugging](./docs) ou [abra uma issue](https://github.com/icl/galeria/issues).
 
 ---
 
@@ -230,4 +230,5 @@ Auditoria de dependências: [docs/AUDITORIA-LICENCAS.md](./docs/AUDITORIA-LICENC
 - **Issues:** https://github.com/icl/galeria/issues
 
 ---
+
 # icl

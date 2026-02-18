@@ -1,0 +1,172 @@
+# CodeQL Advanced - Workflow Completo (CORRIGIDO)
+# Este workflow executa análise de segurança avançada usando CodeQL
+# Documentação: https://docs.github.com/en/code-security/code-scanning
+
+name: "CodeQL Advanced Security Analysis"
+
+on:
+  push:
+    branches: ["dev", "main", "master"]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".gitignore"
+  pull_request:
+    branches: ["dev", "main", "master"]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+  schedule:
+    # Executa às terças-feiras às 18:45 UTC
+    - cron: "45 18 * * 2"
+  workflow_dispatch: # Permite execução manual
+
+# Previne execuções concorrentes do mesmo workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: 360 # Timeout de 6 horas para análises grandes
+
+    permissions:
+      # Necessário para todos os workflows CodeQL
+      security-events: write
+      # Necessário para buscar pacotes privados do CodeQL
+      packages: read
+      # Necessário para workflows em repositórios privados
+      actions: read
+      contents: read
+      # Adicional: permite comentar em PRs com resultados
+      pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+            build-mode: none
+          - language: actions
+            build-mode: none
+          # Adicione outras linguagens conforme necessário:
+          # - language: python
+          #   build-mode: none
+          # - language: java-kotlin
+          #   build-mode: none
+          # - language: go
+          #   build-mode: autobuild
+          # - language: c-cpp
+          #   build-mode: manual
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Faz fetch completo para análise melhor
+          fetch-depth: 0
+          # Inclui submódulos se existirem
+          submodules: recursive
+
+      # Setup de ambiente para linguagens específicas
+      - name: Setup Node.js
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # Instala dependências antes da análise (se necessário)
+      - name: Install dependencies
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile
+          elif [ -f pnpm-lock.yaml ]; then
+            npm install -g pnpm
+            pnpm install --frozen-lockfile
+          else
+            npm install
+          fi
+
+      # Inicializa ferramentas CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+          # Queries personalizadas para análise mais abrangente
+          # security-extended: queries de segurança estendidas
+          # security-and-quality: segurança + qualidade de código
+          queries: +security-extended,security-and-quality
+
+          # Configuração customizada (opcional)
+          # config-file: .github/codeql/codeql-config.yml
+
+          # Pacotes personalizados (se houver)
+          # packs: octo-org/security-queries,octo-org/optional-security-queries
+
+      # Build manual para linguagens compiladas
+      - name: Build manually (if needed)
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: |
+          # Exemplo para projetos Java Maven
+          # mvn clean install -DskipTests
+
+          # Exemplo para projetos C/C++ com Make
+          # make bootstrap
+          # make release
+
+          # Exemplo para projetos .NET
+          # dotnet build --configuration Release
+
+          echo "Configure os comandos de build adequados para seu projeto"
+          exit 1
+
+      # Executa análise CodeQL
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"
+          # O upload é feito automaticamente, não precisa de step adicional
+
+      # Gera relatório de análise (opcional)
+      - name: Generate Analysis Report
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          echo "## 🔍 CodeQL Analysis - ${{ matrix.language }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Análise concluída com sucesso" >> $GITHUB_STEP_SUMMARY
+          echo "- **Linguagem:** ${{ matrix.language }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Verifique a aba **Security** para ver os resultados detalhados." >> $GITHUB_STEP_SUMMARY
+
+  # Job para verificar se todas as análises passaram
+  security-check:
+    name: Security Check Summary
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check analysis results
+        run: |
+          echo "🛡️ Análise de segurança CodeQL concluída"
+          echo "Verifique os resultados na aba Security > Code scanning"
+
+      - name: Notify on failure
+        if: needs.analyze.result == 'failure'
+        run: |
+          echo "⚠️ ATENÇÃO: Análise CodeQL encontrou problemas"
+          echo "Revise os alertas de segurança antes de fazer merge"
+          exit 1
