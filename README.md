@@ -7,6 +7,8 @@
 
 > NOTA: Vou congelar o desenvolvimento desse site que na verdade esse site eu fiz pelos cocos, eu não tinha plano de o fazer, fiz por pura vaidade. me de uma nota por ele, acho que limpo deve ter levado uma semana e meia pra fazer.
 
+> Quando voce pensar que sou uma pessoa madura, lembra que criei esse site porque um menino de 15 anos fez desfeita da minha opiniao e disse que queria somente as que fosse conveniente pra ele. a verdade é que posso ser muito infantil as vezes.
+
 <div align="center">
 
 # 🎨 Galeria I.C.L
